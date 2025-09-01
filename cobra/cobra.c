@@ -1,18 +1,18 @@
-#include "../globals.h"
-#include "raylib.h"
-
 #include <stdint.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+#include "../globals.h"
 #include "../utils/utils.h"
 #include "apple.h"
 #include "cobra.h"
+#include "raylib.h"
 
+// initialize the snake and apple has globals
 struct Cobra *cobra = NULL;
 Vector2 *apple = NULL;
 
+// load both has dynamic memory pointers
 void loadCobra() {
   cobra = malloc(sizeof(*cobra));
   *cobra = (struct Cobra){{10 * TILESIZE, 7 * TILESIZE}, 0, 2, 0.20, 0};
@@ -50,12 +50,17 @@ void updateCobra(double dt) {
     cobra->direction = 3;
   }
 
-  // movement switch
+  /*
+   * movement switch
+   * if the walktime has passed then, the snake moves 1 unit.
+   */
+
   cobra->timer += dt;
   if (cobra->timer >= cobra->walkTime) {
     cobra->timer = 0;
     cobra->oldPos = cobra->pos;
 
+    // moves the snake depending of the direction
     switch (cobra->direction) {
     case 0:
       cobra->pos.x -= TILESIZE;
@@ -71,6 +76,7 @@ void updateCobra(double dt) {
       break;
     }
 
+    // manage the tail of the snake and if a apple has been eaten
     Vector2 oldPos = cobra->oldPos;
     Vector2 nextPos = cobra->oldPos;
 
@@ -92,7 +98,7 @@ void updateCobra(double dt) {
     }
   }
 
-  // managing apple pos
+  // managing apple position
   for (int i = 0; i < cobra->length; i++) {
     Vector2 pos = cobra->tails[i];
 
