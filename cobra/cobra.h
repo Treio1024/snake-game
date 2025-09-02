@@ -10,12 +10,16 @@ struct Cobra {
   uint8_t direction;
   float walkTime;
   double timer;
-  Vector2 *tails;
+  struct Tails {
+    Vector2 pos;
+    Color color;
+  } *tails;
   Vector2 oldPos;
   uint8_t died;
 };
 
 extern struct Cobra *cobra;
+extern Vector2 *apple;
 
 extern void updateCobra(double dt);
 extern void loadCobra(void);

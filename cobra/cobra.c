@@ -4,7 +4,6 @@
 
 #include "../globals.h"
 #include "../utils/utils.h"
-#include "apple.h"
 #include "cobra.h"
 #include "raylib.h"
 
@@ -15,12 +14,12 @@ Vector2 *apple = NULL;
 // load both has dynamic memory pointers
 void loadCobra() {
   cobra = malloc(sizeof(*cobra));
-  *cobra = (struct Cobra){{10 * TILESIZE, 7 * TILESIZE}, 0, 2, 0.20, 0};
+  *cobra = (struct Cobra){{10 * TILESIZE, 7 * TILESIZE}, 0, 2, 0.15, 0};
 
-  cobra->tails = malloc(sizeof(*cobra->tails) * WIDTH / TILESIZE);
-}
+  cobra->tails =
+      malloc(sizeof(*cobra->tails) * (WIDTH / TILESIZE) * (HEIGHT / TILESIZE));
 
-void loadApple() {
+  // initialize applth a random position
   apple = malloc(sizeof *apple);
   *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,
                      randomNumber(0, HEIGHT / TILESIZE) * TILESIZE};
@@ -84,15 +83,28 @@ void updateCobra(double dt) {
       *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,
                          randomNumber(0, HEIGHT / TILESIZE) * TILESIZE};
 
-      cobra->tails[cobra->length] = nextPos;
+      cobra->tails[cobra->length].pos = nextPos;
 
       cobra->length++;
+
+      uint8_t colorValue = 255;
+
+      if (cobra->length) {
+        colorValue = (uint8_t)255 / cobra->length;
+      }
+      for (int i = 0; i < cobra->length; i++) {
+        if (colorValue * (i + 1) > 64) {
+          cobra->tails[i].color = (Color){0, colorValue * (i + 1), 0, 255};
+        } else {
+          cobra->tails[i].color = (Color){0, 64, 0, 255};
+        }
+      }
     }
 
     for (int i = 0; i < cobra->length; i++) {
-      oldPos = cobra->tails[i];
+      oldPos = cobra->tails[i].pos;
 
-      cobra->tails[i] = nextPos;
+      cobra->tails[i].pos = nextPos;
 
       nextPos = oldPos;
     }
@@ -100,7 +112,7 @@ void updateCobra(double dt) {
 
   // managing apple position
   for (int i = 0; i < cobra->length; i++) {
-    Vector2 pos = cobra->tails[i];
+    Vector2 pos = cobra->tails[i].pos;
 
     if (apple->x == pos.x && apple->y == pos.y) {
       *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,

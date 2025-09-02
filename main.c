@@ -7,7 +7,6 @@
 #include "utils/utils.c"
 
 Font defaultFont;
-short int points = 0;
 
 int main() {
 
@@ -19,7 +18,12 @@ int main() {
   defaultFont = LoadFont("assets/MedodicaRegular.otf");
 
   loadCobra();
-  loadApple();
+
+  /*
+   * Set the key to leave the program.
+   * It's already esc but I decided to keep it explicit.
+   */
+  SetExitKey(KEY_ESCAPE);
 
   // creates a string buffer for the points
   char *pointsBuf = malloc(sizeof(char) * 8);
@@ -35,15 +39,15 @@ int main() {
     BeginDrawing();
     ClearBackground(BLACK);
 
+    // draws the snake tail
+    for (int i = 0; i < cobra->length; i++) {
+      DrawRectangle(cobra->tails[i].pos.x, cobra->tails[i].pos.y, TILESIZE,
+                    TILESIZE, cobra->tails[i].color);
+    }
+
     // draws the snake and the apple
     DrawRectangle(cobra->pos.x, cobra->pos.y, TILESIZE, TILESIZE, DARKGREEN);
     DrawRectangle(apple->x, apple->y, TILESIZE, TILESIZE, RED);
-
-    // draws the snake tail
-    for (int i = 0; i < cobra->length; i++) {
-      DrawRectangle(cobra->tails[i].x, cobra->tails[i].y, TILESIZE, TILESIZE,
-                    GREEN);
-    }
 
     // draws the points
     DrawTextEx(defaultFont, (const char *)pointsBuf,
@@ -59,6 +63,8 @@ int main() {
   }
 
   free(pointsBuf);
+  free(cobra);
+  free(apple);
   CloseWindow();
 
   return 0;
