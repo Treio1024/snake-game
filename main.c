@@ -4,7 +4,6 @@
 #include "raylib.h"
 
 #include "cobra/cobra.c"
-#include "utils/utils.c"
 
 Font defaultFont;
 
@@ -12,7 +11,7 @@ int main() {
 
   InitWindow(WIDTH, HEIGHT, "Snake Game");
 
-  setSeed(time(NULL));
+  SetRandomSeed(time(NULL));
 
   // sets the default font
   defaultFont = LoadFont("assets/MedodicaRegular.otf");
@@ -63,6 +62,7 @@ int main() {
   }
 
   free(pointsBuf);
+  free(cobra->tails);
   free(cobra);
   free(apple);
   CloseWindow();

@@ -3,13 +3,14 @@
 #include <time.h>
 
 #include "../globals.h"
-#include "../utils/utils.h"
 #include "cobra.h"
 #include "raylib.h"
 
 // initialize the snake and apple has globals
 struct Cobra *cobra = NULL;
 Vector2 *apple = NULL;
+
+void reloadApplePos();
 
 // load both has dynamic memory pointers
 void loadCobra() {
@@ -21,8 +22,9 @@ void loadCobra() {
 
   // initialize applth a random position
   apple = malloc(sizeof *apple);
-  *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,
-                     randomNumber(0, HEIGHT / TILESIZE) * TILESIZE};
+  *apple =
+      (Vector2){GetRandomValue(0, (WIDTH - TILESIZE) / TILESIZE) * TILESIZE,
+                GetRandomValue(0, (HEIGHT - TILESIZE) / TILESIZE) * TILESIZE};
 }
 
 void updateCobra(double dt) {
@@ -35,18 +37,22 @@ void updateCobra(double dt) {
   if ((IsKeyPressed(KEY_RIGHT) || IsKeyPressed(KEY_D)) &&
       cobra->direction != 0) {
     cobra->direction = 2;
+    cobra->timer = cobra->walkTime;
 
   } else if ((IsKeyPressed(KEY_LEFT) || IsKeyPressed(KEY_A)) &&
              cobra->direction != 2) {
     cobra->direction = 0;
+    cobra->timer = cobra->walkTime;
 
   } else if ((IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W)) &&
              cobra->direction != 3) {
     cobra->direction = 1;
+    cobra->timer = cobra->walkTime;
 
   } else if ((IsKeyPressed(KEY_DOWN) || IsKeyPressed(KEY_S)) &&
              cobra->direction != 1) {
     cobra->direction = 3;
+    cobra->timer = cobra->walkTime;
   }
 
   /*
@@ -80,8 +86,7 @@ void updateCobra(double dt) {
     Vector2 nextPos = cobra->oldPos;
 
     if (apple->x == cobra->pos.x && apple->y == cobra->pos.y) {
-      *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,
-                         randomNumber(0, HEIGHT / TILESIZE) * TILESIZE};
+      reloadApplePos();
 
       cobra->tails[cobra->length].pos = nextPos;
 
@@ -115,18 +120,12 @@ void updateCobra(double dt) {
     Vector2 pos = cobra->tails[i].pos;
 
     if (apple->x == pos.x && apple->y == pos.y) {
-      *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,
-                         randomNumber(0, HEIGHT / TILESIZE) * TILESIZE};
+      reloadApplePos();
     }
 
     if (cobra->pos.x == pos.x && cobra->pos.y == pos.y) {
       cobra->died = 1;
     }
-  }
-
-  if (apple->x == cobra->pos.x && apple->y == cobra->pos.y) {
-    *apple = (Vector2){randomNumber(0, WIDTH / TILESIZE) * TILESIZE,
-                       randomNumber(0, HEIGHT / TILESIZE) * TILESIZE};
   }
 
   // managing borders
@@ -141,4 +140,9 @@ void updateCobra(double dt) {
   } else if (cobra->pos.y > HEIGHT - TILESIZE) {
     cobra->pos.y = 0;
   }
+}
+
+void reloadApplePos() {
+  apple->x = GetRandomValue(0, (WIDTH - TILESIZE) / TILESIZE) * TILESIZE;
+  apple->y = GetRandomValue(0, (HEIGHT - TILESIZE) / TILESIZE) * TILESIZE;
 }

@@ -6,7 +6,7 @@
 
 struct Cobra {
   Vector2 pos;
-  short int length;
+  unsigned short int length;
   uint8_t direction;
   float walkTime;
   double timer;
